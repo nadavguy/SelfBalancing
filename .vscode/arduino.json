@@ -1,5 +1,6 @@
 {
-    "board": "arduino:avr:nano",
-    "configuration": "cpu=atmega328",
-    "sketch": "SelfBalancing\\SelfBalancing.ino"
+    "board": "arduino:avr:mega",
+    "configuration": "cpu=atmega2560",
+    "sketch": "SelfBalancing\\SelfBalancing.ino",
+    "port": "COM4"
 }
