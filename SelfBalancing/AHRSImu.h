@@ -9,7 +9,7 @@ float q0 = 1;
 float q1 = 0;
 float q2 = 0;
 float q3 = 0;
-float sampleRate = 1.0/25.0;
+float sampleRate = 1.0/20.0;
 
 float ax = 0, ay = 0, az = 0;
 float mx = 0, my = 0, mz = 0;

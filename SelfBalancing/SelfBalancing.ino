@@ -1,6 +1,7 @@
 #include "DCMotorControl.h"
 #include "MPU9250.h"
 #include "AHRSImu.h"
+#include "PIDControl.h"
 
 // an MPU9250 object with the MPU-9250 sensor on I2C bus 0 with address 0x68
 MPU9250 IMU(Wire, 0x68);
@@ -17,8 +18,9 @@ int status;
 // char MagY[20];
 // char MagZ[20];
 
-long SensorReadCycle = 200000;    // in micro seconds
+long SensorReadCycle = 20000;    // in micro seconds
 long PreviousSensorReadCycle = 0; // in micro seconds
+long PreviousAHRSCycle = 0; // in micro seconds
 double CurrentTime = 0;
 
 void setup()
@@ -60,6 +62,32 @@ void loop()
   {
     IMU.readSensor();
   }
+
+  if (micros() - PreviousAHRSCycle > 50000) // 20Hz
+  {
+    UpdateAHRS();
+    CurrentTime = micros() / 1000000.0;
+    Serial.print(CurrentTime);
+    // Serial.print(", Roll: ");
+    // Serial.print(Roll);
+    Serial.print(", Pitch: ");
+    Serial.print(Pitch);
+    // Serial.print(", Yaw: ");
+    // Serial.print(Yaw);
+    Serial.print(", dT: ");
+    Serial.print(dT);
+    Serial.print(", Error: ");
+    Serial.print(Error);
+    Serial.print(", Addetive: ");
+    Serial.print(AddativeError);
+    Serial.print(", Derivative: ");
+    Serial.print(Derivative);
+    Serial.print(", PIDOutput: ");
+    Serial.print(PIDOutput);
+    Serial.println("~");
+    CalcPIDStep(Pitch);
+    PreviousAHRSCycle = micros();
+  }
 }
 
 void ReadMPUData()
@@ -87,7 +115,7 @@ void ReadMPUData()
   mx = IMU.getMagX_uT();
   my = IMU.getMagY_uT();
   mz = IMU.getMagZ_uT();
-  CurrentTime = micros() / 100000.0;
+
   // Serial.print(CurrentTime);
   // Serial.print(", AccX: ");
   // Serial.print(ax);
@@ -95,13 +123,4 @@ void ReadMPUData()
   // Serial.print(ay);
   // Serial.print(", AccZ: ");
   // Serial.println(az);
-
-  UpdateAHRS();
-  Serial.print(CurrentTime);
-  Serial.print(", Roll: ");
-  Serial.print(Roll);
-  Serial.print(", Pitch: ");
-  Serial.print(Pitch);
-  Serial.print(", Yaw: ");
-  Serial.println(Yaw);
 }
